@@ -99,6 +99,10 @@ def main(arguments):
             print('Not voting for ignored package:', package)
             continue
 
+        # Ignore -debug packages
+        if ('-debug' in package) and (package[:-6] in foreign_packages):
+            continue
+
         print('Voting for package: %s... ' % package, end='', flush=True)
         if vote_package(session, package):
             print('done.')

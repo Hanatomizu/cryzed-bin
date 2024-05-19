@@ -73,8 +73,13 @@ def unvote_package(session, package):
 
 def check_aur_exist(session, package):
     response = session.get(PAKCAGE_SEARCH_URL_TEMPLATE % package)
-    soup = bs4.BeautifulSoup(response.text, 'html5lib').select_one('#pkglist-results-form > table > tbody > tr:nth-child(1) > td:nth-child(1) > a').get_text()
-    return soup.strip() == package
+    soup = bs4.BeautifulSoup(response.text, 'html5lib').select_one('#pkglist-results-form > table > tbody > tr:nth-child(1) > td:nth-child(1) > a')
+    if soup is None:
+        return False
+    else:
+        name = soup.get_text() 
+        return name.strip() == package
+
 
 # TODO: Handle split packages better
 def main(arguments):
@@ -107,7 +112,7 @@ def main(arguments):
 
         # Ignore -debug packages
         if ('-debug' in package) and (package[:-6] in foreign_packages):
-            if not check_aur_exist(package): 
+            if not check_aur_exist(session, package): 
                 continue
 
         print('Voting for package: %s... ' % package, end='', flush=True)
